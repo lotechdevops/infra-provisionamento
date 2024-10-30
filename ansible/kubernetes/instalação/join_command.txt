@@ -1,0 +1,1 @@
+kubeadm join 192.168.12.230:6443 --token gl2dmq.8z69b1jykwiaf1ju --discovery-token-ca-cert-hash sha256:9a14d6c01803d7fb51c6069ce07e295878bb5a781e87f0491625da561a60477d 

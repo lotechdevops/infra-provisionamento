@@ -1,0 +1,47 @@
+- name: Incluir variáveis de configuração
+  hosts: localhost
+  tasks:
+    - name: Incluir variáveis de configuração
+      include_vars:
+        file: "{{ playbook_dir }}/roles/configuration/cfg.yml"
+
+- name: System requirements
+  hosts: k8sAll
+  become: true
+  roles:
+    - k8s-requirements
+  tags:
+    - k8s-requirements
+
+- name: Containerd Install
+  hosts: k8sAll
+  become: true
+  roles:
+    - containerd-install
+  tags:
+    - containerd-install
+
+- name: Builder cluster
+  hosts: k8sMaster
+  become: true
+  roles:
+    - k8s-master
+  tags:
+    - k8s-master
+
+- name: Adicionar nós workers dinamicamente ao inventário
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Adicionar nó worker dinamicamente
+      add_host:
+        name: node-1
+        groups: k8sWorkers
+
+- name: Ingressar Worker no cluster
+  hosts: k8sWorkers
+  become: true
+  roles:
+    - k8s-workers
+  tags:
+    - k8s-workers

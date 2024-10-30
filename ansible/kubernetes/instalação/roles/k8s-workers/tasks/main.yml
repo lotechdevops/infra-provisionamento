@@ -1,0 +1,43 @@
+- name: Incluir variáveis de configuração
+  include_vars:
+    file: "{{ playbook_dir }}/roles/configuration/cfg.yml"
+
+- name: Debug cfg variable
+  debug:
+    var: cfg
+
+- name: Verificar se o serviço kubelet está ativo
+  command: systemctl is-active kubelet
+  register: kubelet_status
+  ignore_errors: true
+
+- name: Verificar se o serviço kubeadm está ativo
+  command: systemctl is-active kubeadm
+  register: kubeadm_status
+  ignore_errors: true
+
+- name: Copiar o comando join da máquina host para o nó worker
+  copy:
+    src: ./join_command.txt
+    dest: /tmp/join_command.txt
+
+- name: Ler o comando join
+  slurp:
+    src: /tmp/join_command.txt
+  register: join_command_file
+
+- name: Executar o comando join
+  shell: "{{ join_command_file.content | b64decode }}"
+  when: 
+    - kubelet_status.stdout != 'active'
+    - kubeadm_status.stdout != 'active'
+
+- name: Mensagem informativa caso o nó já esteja no cluster
+  debug:
+    msg: "O nó worker já está ingressado no cluster."
+  # when: not join_required
+
+
+
+
+

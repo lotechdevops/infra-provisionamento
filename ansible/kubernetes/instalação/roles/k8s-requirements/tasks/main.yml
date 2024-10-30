@@ -1,0 +1,114 @@
+---
+- name: Update
+  ansible.builtin.apt:
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Upgrade
+  ansible.builtin.apt:
+    upgrade: yes
+  when: ansible_os_family == "Debian"
+
+- name: Baixar pacotes necessários
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gpg
+    state: present
+    update_cache: yes
+  
+- name: Disable fstab
+  ansible.builtin.replace:
+    path: /etc/fstab
+    regexp: '^(.*swap.*)$'  # Encontra a linha que contém "swap"
+    replace: '# \1'          # Comenta a linha encontrada
+    backup: yes    
+
+- name: Swapoff
+  ansible.builtin.command: swapoff -a
+
+- name: Instalação runc
+  ansible.builtin.command: apt install runc -y
+
+- name: Configurar net.ipv4.ip_forward para 1
+  ansible.builtin.sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    state: present
+    sysctl_set: yes
+    reload: yes
+
+- name: Recarregar sysctl para garantir que as mudanças estão aplicadas
+  ansible.builtin.command: sysctl -p
+  ignore_errors: yes
+
+- name: Garantir que o diretório /etc/apt/keyrings existe
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Verificar se o arquivo GPG já existe
+  ansible.builtin.stat:
+    path: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  register: gpg_keyring
+
+- name: Baixar a chave GPG para Kubernetes
+  ansible.builtin.get_url:
+    url: "https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key"
+    dest: /tmp/kubernetes-release.key
+    mode: '0644'
+    owner: root
+    group: root
+  when: not gpg_keyring.stat.exists
+
+- name: Converter a chave GPG para o formato desarmado
+  ansible.builtin.command: "gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg /tmp/kubernetes-release.key"
+  become: yes
+  when: not gpg_keyring.stat.exists
+
+- name: Criar diretório sources.list.d se não existir
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d
+    state: directory
+    mode: '0755'
+
+- name: Verificar se o arquivo do repositório já existe
+  ansible.builtin.stat:
+    path: /etc/apt/sources.list.d/kubernetes.list
+  register: kubernetes_repo
+
+- name: Adicionar o repositório Kubernetes ao sources.list
+  ansible.builtin.copy:
+    content: 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /'
+    dest: /etc/apt/sources.list.d/kubernetes.list
+    mode: '0644'
+    owner: root
+    group: root
+  when: not kubernetes_repo.stat.exists
+
+- name: Atualizar índice de pacotes
+  apt:
+    update_cache: yes
+
+- name: Instalar kubelet, kubeadm e kubectl
+  apt:
+    name:
+      - kubelet
+      - kubeadm
+      - kubectl
+    state: present
+
+- name: Fixar versões de kubelet, kubeadm e kubectl
+  command: apt-mark hold kubelet kubeadm kubectl
+
+- name: Exibir versão do kubectl
+  debug:
+    var: kubectl_version.stdout
+
+- name: Iniciar Kubelet
+  command: systemctl enable --now kubelet

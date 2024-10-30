@@ -1,0 +1,80 @@
+---
+- name: Baixar o binário do containerd nos hosts
+  ansible.builtin.get_url:
+    url: "https://github.com/containerd/containerd/releases/download/v1.7.23/containerd-1.7.23-linux-amd64.tar.gz"
+    dest: "/tmp/containerd-1.7.23-linux-amd64.tar.gz"
+    mode: '0755'
+
+- name: Extrair o binário do containerd
+  ansible.builtin.unarchive:
+    src: "/tmp/containerd-1.7.23-linux-amd64.tar.gz"
+    dest: "/usr/local/"
+    remote_src: yes
+
+- name: Garantir que o diretório /usr/local/lib/systemd/system exista
+  ansible.builtin.file:
+    path: "/usr/local/lib/systemd/system"
+    state: directory
+    mode: '0755'
+
+- name: Baixar o arquivo containerd.service
+  ansible.builtin.get_url:
+    url: "https://raw.githubusercontent.com/containerd/containerd/main/containerd.service"
+    dest: "/usr/local/lib/systemd/system/containerd.service"
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Recarregar o systemd para reconhecer o novo serviço
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Habilitar e iniciar o serviço containerd
+  ansible.builtin.systemd:
+    name: containerd
+    enabled: yes
+    state: started
+
+- name: Criar a pasta do containerd em /etc
+  ansible.builtin.file:
+    path: /etc/containerd
+    state: directory
+    mode: '0755'
+
+- name: Criar o arquivo de configuração do containerd
+  ansible.builtin.file:
+    path: /etc/containerd/config.toml
+    state: touch
+
+- name: Gerar o arquivo padrão do containerd
+  ansible.builtin.command: containerd config default
+  register: containerd_config
+
+- name: Configurar o novo arquivo de configuração
+  ansible.builtin.copy:
+    content: "{{ containerd_config.stdout }}"
+    dest: /etc/containerd/config.toml
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Mudar a configuração do SystemdCgroup
+  ansible.builtin.replace:
+    path: /etc/containerd/config.toml
+    regexp: 'SystemdCgroup = false'
+    replace: 'SystemdCgroup = true'
+
+- name: Reiniciar o serviço do containerd
+  ansible.builtin.systemd:
+    name: containerd
+    state: restarted
+
+- name: Verificar o status do serviço containerd
+  ansible.builtin.systemd:
+    name: containerd
+    state: started
+  register: containerd_status
+
+- name: Mostrar o status do serviço containerd
+  ansible.builtin.debug:
+    var: containerd_status
