@@ -35,9 +35,3 @@
 - name: Mensagem informativa caso o nó já esteja no cluster
   debug:
     msg: "O nó worker já está ingressado no cluster."
-  # when: not join_required
-
-
-
-
-
