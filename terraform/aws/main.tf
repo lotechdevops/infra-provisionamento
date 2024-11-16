@@ -40,3 +40,26 @@ module "natgateway" {
   natgateway_name = var.natgateway_name
 
 }
+
+module "ec2" {
+  source = "./modules/ec2"
+  instance_type_master = var.instance_type_master
+  subnet_private = module.subnet.subnet_private
+  instance_type_worker = var.instance_type_worker
+  worker_count = var.worker_count
+  host_key = module.hostBastion.host_key
+  k8s_sg_id = module.securityGroup.k8s_sg_id
+}
+
+module "securityGroup" {
+  source = "./modules/securityGroup"
+  vpc_k8s = module.vpc.vpc_k8s_id
+}
+
+module "hostBastion" {
+  source = "./modules/hostBastion"
+  instance_type_bastion = var.instance_type_bastion
+  subnet_public = module.subnet.subnet_public
+  bastion_sg_id = module.securityGroup.bastion_sg_id
+  host_key = var.host_key
+}
