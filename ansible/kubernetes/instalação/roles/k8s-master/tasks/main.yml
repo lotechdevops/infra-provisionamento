@@ -58,14 +58,14 @@
   ignore_errors: yes
   delegate_to: "{{ groups['k8sMaster'][0] }}"
   environment:
-    KUBECONFIG: "/home/ubuntu/.kube/config"
+    KUBECONFIG: "/home/{{ ansible_user }}/.kube/config"
 
 - name: Instalar a rede Weave (pod network)
   command: kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
   when: weave_pods_status.rc != 0
   delegate_to: "{{ groups['k8sMaster'][0] }}"
   environment:
-    KUBECONFIG: "/home/ubuntu/.kube/config"
+    KUBECONFIG: "/home/{{ ansible_user }}/.kube/config"
 
 - name: Gerar o token de bootstrap para os nós workers
   shell: kubeadm token create --print-join-command
