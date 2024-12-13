@@ -1,16 +1,16 @@
 - name: Instalar Python3
-  raw: |
+  ansible.builtin.raw: |
     apt install update
     apt install python3 -y
 
 - name: Update
   ansible.builtin.apt:
-    update_cache: yes
+    update_cache: true
   when: ansible_os_family == "Debian"
 
 - name: Upgrade
   ansible.builtin.apt:
-    upgrade: yes
+    upgrade: true
   when: ansible_os_family == "Debian"
 
 - name: Baixar pacotes necessários
@@ -21,7 +21,7 @@
       - curl
       - gpg
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Garantir que o diretório /etc/apt/keyrings existe
   ansible.builtin.file:
@@ -71,11 +71,11 @@
   when: not kubernetes_repo.stat.exists
 
 - name: Atualizar índice de pacotes
-  apt:
-    update_cache: yes
+  ansible.builtin.apt:
+    update_cache: true
 
 - name: Instalar kubectl
-  apt:
+  ansible.builtin.apt:
     name:
       - kubectl
     state: present

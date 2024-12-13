@@ -6,7 +6,7 @@
   tags:
     - k8s-requirements
 
-- name: Containerd Install
+- name: Instalar Containerd
   hosts: k8sAll
   become: true
   roles:
@@ -14,7 +14,7 @@
   tags:
     - containerd-install
 
-- name: Builder cluster
+- name: Configurar o master no cluster
   hosts: k8sMaster
   become: true
   roles:
@@ -22,7 +22,7 @@
   tags:
     - k8s-master
 
-- name: Ingressar Worker no cluster
+- name: Ingressar os Workers no cluster
   hosts: k8sWorkers
   become: true
   roles:
@@ -54,7 +54,7 @@
   tags:
     - nfs-server
 
-- name: Configurar Metallb
+- name: Instalar e Configurar Metallb
   hosts: localhost
   become: false
   roles:
