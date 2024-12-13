@@ -18,7 +18,7 @@
 
 - name: Copiar o comando join da máquina host para o nó worker
   copy:
-    src: ./join_command.txt
+    src: /home/neto/cursos/github/provisionamento-infraestrutura/ansible/kubernetes/instalação
     dest: /tmp/join_command.txt
 
 - name: Ler o comando join

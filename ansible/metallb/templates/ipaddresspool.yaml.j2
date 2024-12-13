@@ -1,0 +1,8 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: "{{ metallb.ipAddressPoolName }}"
+  namespace: "{{ metallb.namespace }}"
+spec:
+  addresses:
+  - "{{ metallb.ipRangeStart }}-{{ metallb.ipRangeEnd }}"

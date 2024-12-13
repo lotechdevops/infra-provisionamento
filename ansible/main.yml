@@ -53,3 +53,11 @@
     - nfs-server
   tags:
     - nfs-server
+
+- name: Configurar Metallb
+  hosts: localhost
+  become: false
+  roles:
+    - metallb
+  tags:
+    - metallb

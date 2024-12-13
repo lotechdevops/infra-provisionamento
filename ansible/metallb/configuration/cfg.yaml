@@ -1,0 +1,6 @@
+metallb:
+  ipAddressPoolName: homelab-pool
+  l2AdvertisementName: homelab-advertisement
+  namespace: metallb-system
+  ipRangeStart: 192.168.123.233
+  ipRangeEnd: 192.168.123.253

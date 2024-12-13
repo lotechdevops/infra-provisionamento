@@ -87,11 +87,11 @@
 - name: Copiar o comando join do master para a máquina host
   fetch:
     src: /etc/kubernetes/join_command.txt
-    dest: ./join_command.txt
+    dest: /home/neto/cursos/github/provisionamento-infraestrutura/ansible/kubernetes/instalação
     flat: yes
 
 - name: Copiar kubeconfig para a máquina host
   fetch:
     src: "/home/{{ ansible_user }}/.kube/config"
-    dest: ./kubeconfig
+    dest: /home/neto/cursos/github/provisionamento-infraestrutura/ansible/kubernetes/instalação
     flat: yes

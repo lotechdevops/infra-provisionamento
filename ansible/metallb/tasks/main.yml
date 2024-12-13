@@ -1,0 +1,48 @@
+- name: Carregar configurações do arquivo cfg.yaml
+  include_vars:
+    file: configuration/cfg.yaml
+
+- name: Definir caminho do kubeconfig
+  set_fact:
+    kubeconfig: "{{ lookup('env', 'HOME') }}/.kube/config_cluster_local"
+  delegate_to: localhost
+
+- name: Deploy Metallb
+  k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    src: https://raw.githubusercontent.com/metallb/metallb/v0.14.3/config/manifests/metallb-native.yaml
+  delegate_to: localhost
+
+- name: Obter informações sobre os pods do MetalLB
+  shell: |
+      kubectl get pods -n metallb-system
+  environment:
+    KUBECONFIG: "{{ kubeconfig }}"
+  delegate_to: localhost
+
+- name: Gerar arquivo de configuração do IPAddressPool
+  template:
+    src: "templates/ipaddresspool.yaml.j2"
+    dest: "/tmp/ipaddresspool.yaml"
+  delegate_to: localhost
+
+- name: Gerar arquivo de configuração do L2Advertisement
+  template:
+    src: "templates/l2advertisement.yaml.j2"
+    dest: "/tmp/l2advertisement.yaml"
+  delegate_to: localhost
+
+- name: Aplicar IPAddressPool
+  k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    src: "/tmp/ipaddresspool.yaml"
+  delegate_to: localhost
+
+- name: Aplicar L2Advertisement
+  k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    src: "/tmp/l2advertisement.yaml"
+  delegate_to: localhost
