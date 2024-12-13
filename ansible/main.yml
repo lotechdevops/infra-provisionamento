@@ -1,10 +1,3 @@
-- name: Incluir variáveis de configuração
-  hosts: localhost
-  tasks:
-    - name: Incluir variáveis de configuração
-      include_vars:
-        file: "{{ playbook_dir }}/roles/configuration/cfg.yml"
-
 - name: System requirements
   hosts: k8sAll
   become: true
@@ -29,15 +22,6 @@
   tags:
     - k8s-master
 
-- name: Adicionar nós workers dinamicamente ao inventário
-  hosts: localhost
-  gather_facts: false
-  tasks:
-    - name: Adicionar nó worker dinamicamente
-      add_host:
-        name: node-1
-        groups: k8sWorkers
-
 - name: Ingressar Worker no cluster
   hosts: k8sWorkers
   become: true
@@ -45,3 +29,27 @@
     - k8s-workers
   tags:
     - k8s-workers
+
+- name: Configurar BastionHost
+  hosts: bastionHost
+  become: true
+  roles:
+    - bastion
+  tags:
+    - bastion
+
+- name: Configurar haproxy
+  hosts: haproxy
+  become: true
+  roles:
+    - haproxy
+  tags:
+    - haproxy
+
+- name: Configurar nfs-server
+  hosts: nfsServer
+  become: true
+  roles:
+    - nfs-server
+  tags:
+    - nfs-server

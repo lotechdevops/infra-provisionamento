@@ -47,7 +47,7 @@ module "ec2" {
   subnet_private = module.subnet.subnet_private
   instance_type_worker = var.instance_type_worker
   worker_count = var.worker_count
-  host_key = module.hostBastion.host_key
+  host_key = var.host_key
   k8s_sg_id = module.securityGroup.k8s_sg_id
 }
 
@@ -61,5 +61,13 @@ module "hostBastion" {
   instance_type_bastion = var.instance_type_bastion
   subnet_public = module.subnet.subnet_public
   bastion_sg_id = module.securityGroup.bastion_sg_id
+  host_key = var.host_key
+}
+
+module "haproxy" {
+  source = "./modules/haproxy"
+  instance_type_haproxy = var.instance_type_haproxy
+  subnet_public = module.subnet.subnet_public
+  haproxy_sg_id = module.securityGroup.haproxy_sg_id
   host_key = var.host_key
 }

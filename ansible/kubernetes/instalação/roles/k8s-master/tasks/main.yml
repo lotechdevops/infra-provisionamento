@@ -1,7 +1,7 @@
 ---
 - name: Incluir variáveis de configuração
   include_vars:
-    file: "{{ playbook_dir }}/roles/configuration/cfg.yml"
+    file: "{{ playbook_dir }}/kubernetes/instalação/configuration/cfg.yml"
 
 - name: Debug cfg variable
   debug:
@@ -20,12 +20,20 @@
     path: /etc/kubernetes/admin.conf
   register: kubeadm_init_status
 
-- name: Inicializar o cluster com kubeadm
-  command: kubeadm init --pod-network-cidr={{ cfg.pod_network_cidr }} --apiserver-advertise-address={{ cfg.apiserver_address }}
-  register: kubeadm_init_output
-  when:
-    - "'k8sMaster' in group_names"
-    - kubeadm_init_status.stat.exists == false
+- name: Criar arquivo de configuração do kubeadm
+  template:
+    src: templates/kubeadm-config.yaml.j2
+    dest: /etc/kubernetes/kubeadm-config.yaml
+    owner: root
+    group: root
+    mode: '0644'
+  when: "'k8sMaster' in group_names"
+
+- name: Inicializar o kubelet e configurar control-plane
+  command: >
+    kubeadm init
+    --config /etc/kubernetes/kubeadm-config.yaml
+  when: "'k8sMaster' in group_names"
 
 - name: Verificar se o arquivo de configuração do kubectl já existe para o usuário atual
   stat:
@@ -53,7 +61,7 @@
   when: kubeadm_init_status.stat.exists == true
 
 - name: Verificar se os pods da rede Weave já estão em execução
-  command: kubectl get pods -n kube-system -l name=weave-net
+  command: kubectl get pods -n kube-system -l app.kubernetes.io/name=weave-net
   register: weave_pods_status
   ignore_errors: yes
   delegate_to: "{{ groups['k8sMaster'][0] }}"
@@ -62,7 +70,7 @@
 
 - name: Instalar a rede Weave (pod network)
   command: kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
-  when: weave_pods_status.rc != 0
+  when: "'No resources found' in weave_pods_status.stderr or weave_pods_status.rc != 0"
   delegate_to: "{{ groups['k8sMaster'][0] }}"
   environment:
     KUBECONFIG: "/home/{{ ansible_user }}/.kube/config"
@@ -80,4 +88,10 @@
   fetch:
     src: /etc/kubernetes/join_command.txt
     dest: ./join_command.txt
+    flat: yes
+
+- name: Copiar kubeconfig para a máquina host
+  fetch:
+    src: "/home/{{ ansible_user }}/.kube/config"
+    dest: ./kubeconfig
     flat: yes

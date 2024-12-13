@@ -1,6 +1,6 @@
 - name: Incluir variáveis de configuração
   include_vars:
-    file: "{{ playbook_dir }}/roles/configuration/cfg.yml"
+    file: "{{ playbook_dir }}/kubernetes/instalação/configuration/cfg.yml"
 
 - name: Debug cfg variable
   debug:

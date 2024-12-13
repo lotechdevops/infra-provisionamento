@@ -1,0 +1,38 @@
+- name: Update
+  ansible.builtin.apt:
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Upgrade
+  ansible.builtin.apt:
+    upgrade: yes
+  when: ansible_os_family == "Debian"
+
+- name: Instalar pacotes necessários no Debian/Ubuntu
+  apt:
+    name: 
+    - nfs-kernel-server
+    - nfs-common
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Criar o diretório exportado
+  file:
+    path: /nfs/k8s-storage
+    state: directory
+    mode: '0777'
+
+- name: Configurar exportação no /etc/exports
+  lineinfile:
+    path: /etc/exports
+    line: "/nfs/k8s-storage *(rw,sync,no_subtree_check,no_root_squash)"
+    create: yes
+
+- name: Exportar os diretórios configurados
+  command: exportfs -rav
+
+- name: Reiniciar o serviço NFS
+  service:
+    name: nfs-kernel-server
+    state: restarted
+  when: ansible_os_family == "Debian"

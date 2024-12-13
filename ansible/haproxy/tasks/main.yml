@@ -1,0 +1,30 @@
+- name: Update
+  ansible.builtin.apt:
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Upgrade
+  ansible.builtin.apt:
+    upgrade: yes
+  when: ansible_os_family == "Debian"
+
+- name: Instalar pacote do haproxy
+  ansible.builtin.apt:
+      name:
+        - haproxy
+      state: present
+      update_cache: yes
+
+- name: Enviar arquivo de configuração do HAProxy
+  template:
+    src: templates/haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Reiniciar serviço HAProxy
+  service:
+    name: haproxy
+    state: restarted
+    enabled: yes

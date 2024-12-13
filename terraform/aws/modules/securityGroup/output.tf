@@ -5,3 +5,7 @@ output "bastion_sg_id" {
 output "k8s_sg_id" {
   value = aws_security_group.k8s_sg.id
 }
+
+output "haproxy_sg_id" {
+  value = aws_security_group.haproxy_sg.id
+}

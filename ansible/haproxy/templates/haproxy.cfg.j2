@@ -1,0 +1,27 @@
+# Global settings
+global
+    log /dev/log    local0
+    log /dev/log    local1 notice
+
+# Default settings
+defaults
+    log     global
+    option  tcplog
+    timeout connect 5000ms
+    timeout client  50000ms
+    timeout server  50000ms
+
+# Configuração frontend para o acesso ao API do Kubernetes
+frontend k8s-api
+    bind *:6443
+    mode tcp
+    default_backend k8s-masters
+
+# Configuração backend para os masters
+backend k8s-masters
+    mode tcp
+    balance roundrobin
+    option tcp-check
+    {% for host in groups['k8sMaster'] %}
+    server master {{ host }}:6443 check
+    {% endfor %}

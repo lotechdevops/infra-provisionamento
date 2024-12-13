@@ -37,6 +37,6 @@ resource "aws_instance" "k8s_workers" {
   }
 
   tags = {
-    Name = "k8s-worker-${count.index + 1}"
+    Name = "k8s_worker_${count.index + 1}"
   }
 }
