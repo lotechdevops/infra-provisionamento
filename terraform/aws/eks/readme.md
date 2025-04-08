@@ -138,9 +138,16 @@ aws eks update-kubeconfig --region us-east-1 --name eks-dev-cluster
 ```bash
 .
 ├── main.tf
-├── terraform.tfvars
-├── variables.tf
-├── locals.tf
+├── vars-vpc.tf
+├── vars-subnets.tf
+├── vars-routeTable.tf
+├── vars-internetGateway.tf
+├── vars-natGateway.tf
+├── vars-securityGroups.tf
+├── vars-iamEks.tf
+├── vars-eks.tf
+├── vars-eksNodeGroups.tf
+├── vars-eks-addons.tf
 ├── modules/
 │   ├── vpc/
 │   ├── subnets/
@@ -155,12 +162,6 @@ aws eks update-kubeconfig --region us-east-1 --name eks-dev-cluster
 ```
 
 ---
-
-## 🛠 Autor
-
-Feito com 💻 por **@seuuser** — laboratório prático com AWS, Kubernetes e Terraform.
-
-
 
 ## 📘 Descrição dos Módulos
 
