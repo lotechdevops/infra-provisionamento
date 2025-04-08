@@ -10,8 +10,7 @@ data "aws_ami" "ubuntu" {
 resource "aws_instance" "k8s_master" {
     ami = data.aws_ami.ubuntu.id
     instance_type = var.instance_type_master
-    subnet_id                   = var.public_subnet_ids[0]
-    associate_public_ip_address = true
+    subnet_id = var.private_subnet_ids[0]
     vpc_security_group_ids = [var.sg_master_id]
     
 

@@ -5,5 +5,4 @@ resource "aws_internet_gateway" "k8s_igw" {
   tags = {
     Name = var.igw_name
   }
-
 }
