@@ -16,14 +16,14 @@
   register: kubeadm_status
   ignore_errors: true
 
-- name: Copiar o comando join da máquina host para o nó worker
+- name: Copiar join_command.txt da máquina local para o worker
   copy:
-    src: /home/neto/cursos/github/provisionamento-infraestrutura/ansible/kubernetes/instalação
-    dest: /tmp/join_command.txt
+    src: "{{ playbook_dir }}/join_command.txt"
+    dest: "/tmp/join_command.txt"
 
-- name: Ler o comando join
+- name: Ler o comando join no nó worker
   slurp:
-    src: /tmp/join_command.txt
+    src: "/tmp/join_command.txt"
   register: join_command_file
 
 - name: Executar o comando join
