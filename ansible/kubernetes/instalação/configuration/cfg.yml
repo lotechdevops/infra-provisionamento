@@ -1,6 +1,0 @@
-cfg:
-  clusterConfiguration:
-    apiSecurePort: 6443
-    controlPlaneEndpoint: "192.168.1.23:6443"
-  pod_network_cidr: "10.10.0.0/16"
-  apiserver_address: "192.168.1.23"
