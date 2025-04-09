@@ -1,0 +1,22 @@
+# Ignorar todas as pastas .terraform em qualquer nível
+**/.terraform/
+
+# Ignorar arquivos de estado (em qualquer lugar)
+**/terraform.tfstate
+**/terraform.tfstate.backup
+
+# Ignorar arquivos de plano
+*.tfplan
+
+# Ignorar variáveis sensíveis
+*.tfvars
+
+# Ignorar arquivos de override locais
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ignorar arquivos de log ou backup
+*.log
+*.bak

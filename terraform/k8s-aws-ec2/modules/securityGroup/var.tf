@@ -1,3 +1,5 @@
+# Módulo refatorado com blocos de regra compactos por grupo (master, nodes, bastion)
+
 variable "vpc_k8s" {
   type = string
 }
@@ -10,30 +12,42 @@ variable "name_prefix_nodes" {
   type = string
 }
 
-variable "sg_ingress_master" {
+variable "name_prefix_bastion" {
+  type = string
+}
+
+variable "allowed_ssh_cidr" {
+  type = string
+}
+
+variable "master_rules" {
   type = map(object({
-    from_port   = number
-    to_port     = number
-    protocol    = string
-    cidr_blocks = list(string)
+    description  = string
+    from_port    = number
+    to_port      = number
+    protocol     = string
+    cidr_blocks  = optional(list(string))
   }))
 }
 
-variable "sg_ingress_nodes" {
+variable "node_rules" {
   type = map(object({
-    from_port                = number
-    to_port                  = number
-    protocol                 = string
-    source_security_group_id = optional(string)
-    cidr_blocks              = optional(list(string))
+    description  = string
+    from_port    = number
+    to_port      = number
+    protocol     = string
+    cidr_blocks  = optional(list(string))
   }))
 }
 
-variable "sg_egress" {
+variable "bastion_rules" {
   type = map(object({
-    from_port   = number
-    to_port     = number
-    protocol    = string
-    cidr_blocks = list(string)
+    description  = string
+    from_port    = number
+    to_port      = number
+    protocol     = string
+    cidr_blocks  = optional(list(string))
   }))
 }
+
+# O conteúdo do main.tf permanece o mesmo a partir deste ponto

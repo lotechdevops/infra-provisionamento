@@ -1,53 +1,97 @@
-locals {
-  security_group_config = {
-    name_prefix_master = "k8s-dev-master"
-    name_prefix_nodes  = "k8s-dev-nodes"
-  }
+# vars-securityGroup.tf (root)
 
-  sg_ingress_master = {
-    kube_api = {
+variable "name_prefix_master" {
+  default = "k8s-master"
+}
+
+variable "name_prefix_nodes" {
+  default = "k8s-nodes"
+}
+
+variable "name_prefix_bastion" {
+  default = "bastion"
+}
+
+variable "allowed_ssh_cidr" {
+  default = "177.91.55.123/32"
+}
+
+variable "master_rules" {
+  default = {
+    api = {
+      description = "Kubernetes API"
       from_port   = 6443
       to_port     = 6443
       protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
     }
-    kubelet = {
-      from_port  = 10250
-      to_port    = 10250
-      protocol   = "tcp"
+    ssh = {
+      description = "SSH do Bastion"
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+    }
+    egress = {
+      description = "Allow all outbound"
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
       cidr_blocks = ["0.0.0.0/0"]
     }
   }
+}
 
-  sg_ingress_nodes = {
-    api_server_https = {
-      from_port                = 443
-      to_port                  = 443
-      protocol                 = "tcp"
-      source_security_group_id = null # será preenchido via override no main.tf depois de criar o sg_master
-    },
+variable "node_rules" {
+  default = {
+    api = {
+      description = "API Server from Master"
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+    }
     kubelet = {
-      from_port                = 10250
-      to_port                  = 10250
-      protocol                 = "tcp"
-      source_security_group_id = null
-    },
+      description = "Kubelet"
+      from_port   = 10250
+      to_port     = 10250
+      protocol    = "tcp"
+    }
     dns_tcp = {
-      from_port                = 53
-      to_port                  = 53
-      protocol                 = "tcp"
-      source_security_group_id = null
-    },
+      description = "DNS TCP"
+      from_port   = 53
+      to_port     = 53
+      protocol    = "tcp"
+    }
     dns_udp = {
-      from_port                = 53
-      to_port                  = 53
-      protocol                 = "udp"
-      source_security_group_id = null
+      description = "DNS UDP"
+      from_port   = 53
+      to_port     = 53
+      protocol    = "udp"
+    }
+    ssh = {
+      description = "SSH do Bastion"
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+    }
+    egress = {
+      description = "Allow all outbound"
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_blocks = ["0.0.0.0/0"]
     }
   }
+}
 
-  sg_egress_default = {
-    all = {
+variable "bastion_rules" {
+  default = {
+    ssh = {
+      description = "Acesso SSH ao bastion"
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+    }
+    egress = {
+      description = "Allow all outbound"
       from_port   = 0
       to_port     = 0
       protocol    = "-1"

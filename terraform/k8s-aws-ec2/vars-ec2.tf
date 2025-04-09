@@ -9,3 +9,7 @@ variable "instance_type_worker" {
 variable "worker_count" {
   default = 2
 }
+
+variable "host_key" {
+  default = "key_neto_account"
+}
