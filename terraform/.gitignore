@@ -4,6 +4,7 @@
 # Ignorar arquivos de estado (em qualquer lugar)
 **/terraform.tfstate
 **/terraform.tfstate.backup
+**/.terraform.lock.hcl
 
 # Ignorar arquivos de plano
 *.tfplan
