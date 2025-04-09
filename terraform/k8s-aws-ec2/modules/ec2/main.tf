@@ -16,11 +16,11 @@ resource "aws_instance" "k8s_master" {
     
 
     instance_market_options {
-      market_type = "spot"
+      market_type = var.market_type_master
     }
 
     tags = {
-        Name = "k8s_master"
+        Name = var.tag_name_master
     }
 }
 
@@ -33,10 +33,10 @@ resource "aws_instance" "k8s_workers" {
   key_name = var.host_key
 
   instance_market_options {
-    market_type = "spot"
+    market_type = var.market_type_worker
   }
 
   tags = {
-    Name = "k8s_worker_${count.index + 1}"
+    Name = "${var.tag_name_worker}-${count.index + 1}"
   }
 }

@@ -59,6 +59,10 @@ module "ec2" {
   host_key             = var.host_key
   sg_master_id         = module.securityGroup.sg_master_id
   sg_nodes_id          = module.securityGroup.sg_nodes_id
+  market_type_master   = var.market_type_master
+  market_type_worker   = var.market_type_worker
+  tag_name_master      = var.tag_name_master
+  tag_name_worker      = var.tag_name_worker
 }
 
 module "hostBastion" {

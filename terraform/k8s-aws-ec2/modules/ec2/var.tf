@@ -29,3 +29,19 @@ variable "public_subnet_ids" {
 variable "host_key" {
   type = string
 }
+
+variable "market_type_master" {
+  type = string
+}
+
+variable "market_type_worker" {
+  type = string
+}
+
+variable "tag_name_master" {
+  type = string
+}
+
+variable "tag_name_worker" {
+  type = string
+}
