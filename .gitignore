@@ -1,0 +1,26 @@
+# Arquivos locais do Terraform
+.terraform/
+.terraform.lock.hcl
+
+# Arquivos de estado
+*.tfstate
+*.tfstate.backup
+
+# Planos de execução
+*.tfplan
+
+# Arquivos sensíveis (chaves, variáveis locais, etc.)
+*.pem
+*.key
+*.crt
+*.env
+
+# Diretórios ocultos e temporários
+*.log
+*.bak
+*.tmp
+*.swp
+.DS_Store
+
+# Arquivos de saída gerados manualmente
+terraform.tfvars
