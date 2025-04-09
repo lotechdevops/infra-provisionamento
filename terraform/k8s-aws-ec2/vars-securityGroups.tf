@@ -13,7 +13,7 @@ variable "name_prefix_bastion" {
 }
 
 variable "allowed_ssh_cidr" {
-  default = "177.91.55.123/32"
+  default = "0.0.0.0/0"
 }
 
 variable "master_rules" {
@@ -44,8 +44,8 @@ variable "node_rules" {
   default = {
     api = {
       description = "API Server from Master"
-      from_port   = 443
-      to_port     = 443
+      from_port   = 6443
+      to_port     = 6443
       protocol    = "tcp"
     }
     kubelet = {

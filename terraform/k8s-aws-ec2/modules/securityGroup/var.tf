@@ -1,5 +1,3 @@
-# Módulo refatorado com blocos de regra compactos por grupo (master, nodes, bastion)
-
 variable "vpc_k8s" {
   type = string
 }
@@ -49,5 +47,3 @@ variable "bastion_rules" {
     cidr_blocks  = optional(list(string))
   }))
 }
-
-# O conteúdo do main.tf permanece o mesmo a partir deste ponto

@@ -37,28 +37,28 @@ module "routeTable" {
 }
 
 module "securityGroup" {
-  source = "./modules/securityGroup"
+  source              = "./modules/securityGroup"
   vpc_k8s             = module.vpc.vpc_k8s_id
   name_prefix_master  = var.name_prefix_master
   name_prefix_nodes   = var.name_prefix_nodes
   name_prefix_bastion = var.name_prefix_bastion
   allowed_ssh_cidr    = var.allowed_ssh_cidr
-  master_rules = var.master_rules
-  node_rules   = var.node_rules
-  bastion_rules = var.bastion_rules
+  master_rules        = var.master_rules
+  node_rules          = var.node_rules
+  bastion_rules       = var.bastion_rules
 }
 
 
 module "ec2" {
-  source                = "./modules/ec2"
-  public_subnet_ids     = module.subnets.public_subnet_ids
-  private_subnet_ids    = module.subnets.private_subnet_ids
-  instance_type_master  = var.instance_type_master
-  instance_type_worker  = var.instance_type_worker
-  worker_count          = var.worker_count
-  host_key              = var.host_key
-  sg_master_id          = module.securityGroup.sg_master_id
-  sg_nodes_id           = module.securityGroup.sg_nodes_id
+  source               = "./modules/ec2"
+  public_subnet_ids    = module.subnets.public_subnet_ids
+  private_subnet_ids   = module.subnets.private_subnet_ids
+  instance_type_master = var.instance_type_master
+  instance_type_worker = var.instance_type_worker
+  worker_count         = var.worker_count
+  host_key             = var.host_key
+  sg_master_id         = module.securityGroup.sg_master_id
+  sg_nodes_id          = module.securityGroup.sg_nodes_id
 }
 
 module "hostBastion" {
@@ -66,7 +66,7 @@ module "hostBastion" {
   public_subnet_ids     = module.subnets.public_subnet_ids
   instance_type_bastion = var.instance_type_bastion
   bastion_sg_id         = module.securityGroup.bastion_sg_id
-  host_key = var.host_key
+  host_key              = var.host_key
 }
 
 
