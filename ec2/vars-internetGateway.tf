@@ -1,3 +1,5 @@
 variable "igw_name" {
-  default = "demo-igw"
+  description = "Nome do Internet Gateway"
+  type        = string
+  default     = "demo-igw"
 }
