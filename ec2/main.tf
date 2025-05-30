@@ -88,3 +88,24 @@ module "securityGroup" {
     Project     = var.project_name
   })
 }
+
+module "ec2" {
+  source = "./modules/ec2"  
+  vpc_demo_id        = module.vpc.vpc_demo_id
+  name_prefix        = var.name_prefix
+  instances          = var.instances
+  public_subnet_ids  = module.subnets.public_subnet_ids
+  private_subnet_ids = module.subnets.private_subnet_ids
+  
+  # Mapear AZs para subnet IDs
+  public_subnet_azs  = module.subnets.public_subnet_map
+  private_subnet_azs = module.subnets.private_subnet_map
+  
+  # AUTOMÁTICO: Pegar IDs dos security groups criados
+  security_group_ids_map = module.securityGroup.security_group_ids
+  
+  depends_on = [
+    module.subnets,
+    module.securityGroup
+  ]
+}
