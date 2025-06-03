@@ -3,33 +3,33 @@
 variable "instances" {
   default = {
     # Bastion Host - 1 instância pública
-    bastion = {
-      name                        = "bastion"
-      count                      = 1
-      instance_type              = "t3.micro"
-      subnet_type                = "public"
-      availability_zones         = ["us-east-1a"]
-      associate_public_ip_address = true
-      security_group_names       = ["web"]  # ← Certifique-se que existe
-      key_name                   = "key_neto_account"
+    # bastion = {
+    #   name                        = "bastion"
+    #   count                      = 1
+    #   instance_type              = "t3.micro"
+    #   subnet_type                = "public"
+    #   availability_zones         = ["us-east-1a"]
+    #   associate_public_ip_address = true
+    #   security_group_names       = ["web"]  # ← Certifique-se que existe
+    #   key_name                   = "key_neto_account"
       
-      user_data = <<-EOF
-        #!/bin/bash
-        yum update -y
-        yum install -y htop tree wget curl
-        echo "Bastion host configurado!" > /var/log/setup.log
-      EOF
-    }
+    #   user_data = <<-EOF
+    #     #!/bin/bash
+    #     yum update -y
+    #     yum install -y htop tree wget curl
+    #     echo "Bastion host configurado!" > /var/log/setup.log
+    #   EOF
+    # }
     
     # Web Servers - 2 instâncias distribuídas
     web = {
       name                        = "web-server"
-      count                      = 2
-      instance_type              = "t3.small"
+      count                      = 4
+      instance_type              = "t2.micro"
       subnet_type                = "private"
       availability_zones         = ["us-east-1a", "us-east-1b"]
       associate_public_ip_address = false
-      security_group_names       = ["web"]      # ← Funciona!
+      security_group_names       = ["web"]
       key_name                   = "key_neto_account"
       
       user_data = <<-EOF

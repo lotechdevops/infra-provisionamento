@@ -37,6 +37,9 @@ resource "aws_instance" "this" {
   ami           = data.aws_ami.amazon_linux.id
   instance_type = each.value.instance_type
   key_name      = each.value.key_name
+  instance_market_options {
+    market_type = "spot"
+  }
 
   # Escolher subnet baseado no tipo e AZ selecionada
   subnet_id = each.value.subnet_type == "public" ? var.public_subnet_azs[each.value.selected_az] : var.private_subnet_azs[each.value.selected_az]
